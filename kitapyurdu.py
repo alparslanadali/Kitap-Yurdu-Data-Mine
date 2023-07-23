@@ -3,6 +3,8 @@ from selenium.webdriver.common.by import By
 import time
 from selenium.webdriver.common.action_chains import ActionChains
 import pymongo
+
+
 class kitapyurdu():
     "That class entering kitapyurdu website and taking all book infos."
      
@@ -61,7 +63,7 @@ class kitapyurdu():
             var yazar = sayfa;
             return yazar
             """
-            books_raiting_JSS = browser.execute_script(jsCommend_raiting).split(",")[0] +" times votes" #dataya uygun diziliyor.
+            books_raiting_JSS = browser.execute_script(jsCommend_raiting).split(",")[0] +" times votes" #is aligned according to the data.
             # books_info_JSS = str(books_info_JSS)
             # books_info_JSS.split(" ")
             books_rating.append(books_raiting_JSS)
@@ -88,7 +90,7 @@ class kitapyurdu():
     def Page_Number(self,browser):
         "That Fonk. taking page number "
         results = browser.find_element(By.CLASS_NAME,"results").text
-        print(results)
+        #print(results)
         return results.split("(")[-1].split(")")[0].split(" ")[0]
 
     def Book_Name(self,browser):
@@ -135,52 +137,11 @@ class kitapyurdu():
             books_website_price_JSS = browser.execute_script(jsCommend_website_price)
             # books_info_JSS = str(books_info_JSS)
             # books_info_JSS.split(" ")
-            books_website_price_JSS= books_website_price_JSS.split(" ")[-1] + " ₺" # website price i istenen değerlere ceviriyorum.
-            books_website_price.append(books_website_price_JSS) # 20 li listeye ekliyorum.
+            books_website_price_JSS= books_website_price_JSS.split(" ")[-1] + " ₺" # I convert website price to the desired values.
+            books_website_price.append(books_website_price_JSS) # I'll add it to the list of 20.
 
         return books_website_price
     
-    #*********************************************************************************************************
-    # FABRİKA METODU KULLANMAK İÇİN SADELEŞTİRMEYE ÇALIŞTIM AMA SON NUMARAYI ALAMADIĞIM İÇİN KODU BOZMAK İSTEMEDİM 
-    #*********************************************************************************************************
-    
-    # def Data_Mane(self,last_number,page_number,browser):
-    #     " that fonk. is taking website datas"
-    #     print(f"son numara {last_number} sayfa sayısı {int(page_number)}")
-    #     for j in range(last_number,int(page_number)):
-    #         #print("Hata yok 174")
-
-           
-    #         book_names = self.Book_Name(browser)
-    #         book_publishers = self.Books_Publisher(browser)
-    #         book_writers =  self.Books_Writer(browser)
-    #         book_infos = self.Books_Info(browser)
-    #            #print("hata yok 179")
-    #         book_pruducer_prices = self.Book_Producer_Price(browser)
-    #         book_website_price = self.Books_Website_Price(browser)
-                                   
-    #         book_votes = self.Book_Raiting(browser)
-    #         time.sleep(1)
-    #         #self.Data_Save()
-    #                 #print(f"""
-    #                             #             {book_names}
-    #                             #             {book_publishers}
-    #                             #             {book_writers}
-    #                             #             {book_infos}
-    #                             #             {book_pruducer_prices}
-    #                             #             {book_website_price}
-    #                         #             {book_votes}
-    #                             #         """)
-    #         time.sleep(3)
-    #         browser.get(f"https://www.kitapyurdu.com/index.php?route=product/category&page={j}&filter_category_all=true&path=1&filter_in_stock=1&sort=purchased_365&order=DESC")
-    #         #browser.find_element(By.CLASS_NAME,"next").click()
-    #         time.sleep(3)
-    #         print(f"Şuan bulunan sayfa {j}")
-            
-    
-    #         # except:
-    #         #     browser.get(f"https://www.kitapyurdu.com/index.php?route=product/category&page={last_number}&filter_category_all=true&path=1&filter_in_stock=1&sort=purchased_365&order=DESC")
-    #         # #return book_names,book_publishers,book_writers,book_infos,book_pruducer_prices,book_website_price,book_votes
     
     def Data_Save(self):
         "That fonk. saving data in MongoDB data base"
@@ -198,32 +159,34 @@ class kitapyurdu():
         last_number = 1
         url = self.Url_Adress()
         browser = self.Browser()
-
+        identify = 0
         while True:
-
             try:
-
+                
                 time.sleep(2)
                 browser.get(url)
                 time.sleep(2)
-                main_window = browser.find_element(By.XPATH,"/html/body/div[1]/div[4]/div[1]/ul/li[1]/div[2]/ul/li[1]/span") #kayan pencere aktifleşmesi için konumu
-                time.sleep(1)
-                action_main_window = ActionChains(browser) # menu algoritmasının etkileşmesi için action kullanıyorum
-                action_main_window.move_to_element(main_window).perform() # action kullanıyorum
-                time.sleep(2)
-                browser.find_element(By.XPATH,"//a[@href='kategori/kitap/1.html']").click() #kitaplara tıklyıorum
-                time.sleep(2)
-                browser.find_element(By.ID,"list_product_carousel_best_sell-view-all").click() #tüm kitaplara tıklıyor
-                time.sleep(2)
-                browser.find_element(By.XPATH,"/html/body/div[5]/div/div[3]/div/div[1]/div/label[2]/span").click() # stoktaki kitaplara tıklanıyor
-                time.sleep(2)
+                if identify !=1:
+                    # if last page not 1 browser will going to last page and doing action , now that block ignoring action
+                    print(identify)
+                    main_window = browser.find_element(By.XPATH,"/html/body/div[1]/div[4]/div[1]/ul/li[1]/div[2]/ul/li[1]/span") #position for sliding window activation
+                    time.sleep(1)
+                    action_main_window = ActionChains(browser) # I use action to interact with the menu algorithm
+                    action_main_window.move_to_element(main_window).perform() # using action
+                    time.sleep(2)
+                    browser.find_element(By.XPATH,"//a[@href='kategori/kitap/1.html']").click() #clicking on books
+                    time.sleep(2)
+                    browser.find_element(By.ID,"list_product_carousel_best_sell-view-all").click() #clicks on all the books
+                    time.sleep(2)
+                    browser.find_element(By.XPATH,"/html/body/div[5]/div/div[3]/div/div[1]/div/label[2]/span").click() # clicking on books in stock
+                    time.sleep(2)
 
                 try:
 
-                    page_number = self.Page_Number(browser) # sayfa numarası alınıyor
-                    print(page_number)
-                    print("satır 129 hata yok ")
-                    for j in range(last_number,int(page_number)): #sayfalar arasında gezinmek son numarayı bulmak için e
+                    page_number = self.Page_Number(browser) # getting page number
+                    #print(page_number)
+                    #print("satır 129 hata yok ")
+                    for j in range(last_number,int(page_number)): #scroll through pages to find the last number 
                         last_number = j
                         book_names = self.Book_Name(browser)
                         book_publishers = self.Books_Publisher(browser)
@@ -236,31 +199,32 @@ class kitapyurdu():
                         time.sleep(1)
                         self.Data_Save()
                         time.sleep(3)
-                        #bir önceki sayfadan verileri aldıktan sonra, sonraki sayfaya gidiyor.
+                        #After getting the data from the previous page, it goes to the next page.
                         browser.get(f"https://www.kitapyurdu.com/index.php?route=product/category&page={last_number}&filter_category_all=true&path=1&filter_in_stock=1&filter_in_shelf=1&sort=purchased_365&order=DESC")
                         time.sleep(3)
                         #print(f"Şuan bulunan sayfa {last_number}")
 
-                    #self.Data_Mane(last_number=last_number, browser=browser, page_number=page_number)                     
+            
                 except:
-                    "Sayfadan veriler çekilirken ki oluşacak herhangi bir hatada tekrar kaldiği yerden devam etmesi için."
+                    "To continue from where it left off again in case of any error that may occur while pulling data from the page."
+
                     #print("expect sondan 2")
                     if last_number==0:
                         url = self.Url_Adress()
                     else:
-                        #last_number = self.Data_Mane(last_number=last_number, browser=browser, page_number=page_number)
+                    
                         last_number = last_number
                         url = f"https://www.kitapyurdu.com/index.php?route=product/category&page={last_number}&filter_category_all=true&path=1&filter_in_stock=1&filter_in_shelf=1&sort=purchased_365&order=DESC"
             except:
-                " sayfa verilerinin olduğu sayfaya giderkenki olasi hatalarda yada browser hatalarinda tekrar çalişmasi için yapilan blok "
+                " block for re-running in case of possible errors or browser errors on the way to the page with page data  "
+
                 #print("expect sondan 1")
                 url = self.Url_Adress()
                 browser = self.Browser()
-                if last_number==0:
+                if last_number==1:
                     url = self.Url_Adress()
                 else:
-                    last_number = last_number
-                    #last_number = self.Data_Mane(last_number=last_number, browser=browser, page_number=page_number)
+                    identify = 1 #if last number not 1 that will blok action clicks:
                     url = f"https://www.kitapyurdu.com/index.php?route=product/category&page={last_number}&filter_category_all=true&path=1&filter_in_stock=1&filter_in_shelf=1&sort=purchased_365&order=DESC"
     
 
