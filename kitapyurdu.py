@@ -5,7 +5,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 import pymongo
 
 
-class kitapyurdu():
+class KitapYurdu():
     "That class entering kitapyurdu website and taking all book infos."
      
     def Browser(self):
@@ -228,4 +228,4 @@ class kitapyurdu():
                     url = f"https://www.kitapyurdu.com/index.php?route=product/category&page={last_number}&filter_category_all=true&path=1&filter_in_stock=1&filter_in_shelf=1&sort=purchased_365&order=DESC"
     
 
-kitapyurdu().Mining()
+KitapYurdu().Mining()
